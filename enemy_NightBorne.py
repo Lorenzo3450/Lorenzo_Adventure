@@ -4,8 +4,9 @@ from pgzero.builtins import sounds
 from audio import play_sound
 from enemy import VELOCIDADE_CORRIDA, GRAVIDADE, VELOCIDADE_QUEDA_MAX
 
-class Inimigo_NightBorne(Inimigo):
-    def __init__(self, posicao_inicial_x, posicao_inicial_y, plataformas):
+
+class Enemy_NightBorne(Inimigo):
+    def __init__(self, posicao_inicial_x, posicao_inicial_y, plataformas, x_inicial, x_final):
         super().__init__(
             imagens_idle_right=[
                 'enemy1_idle_0', 'enemy1_idle_1', 'enemy1_idle_2', 'enemy1_idle_3',
@@ -55,20 +56,26 @@ class Inimigo_NightBorne(Inimigo):
                 'enemy1_death_20', 'enemy1_death_21', 'enemy1_death_22'
             ],
             vida=100,
-            dano=10,
+            dano=40,
             posicao_inicial_x=posicao_inicial_x,
             posicao_inicial_y=posicao_inicial_y,
-            plataformas=plataformas
+            plataformas=plataformas,
+            x_inicial=x_inicial,
+            x_final=x_final
         )
         # Sons específicos para o NightBorne:
         self.sound_attack = sounds.enemy_attack
-        self.sound_run    = sounds.enemy_walk
+        self.sound_run = sounds.enemy_walk
         self.sound_damage = sounds.enemy_damage
-        self.sound_death  = sounds.enemy_death
+        self.sound_death = sounds.enemy_death
         self.attack_range = 50  # Distância máxima para ataque
 
         # Flag para garantir que o som de ataque seja tocado apenas uma vez por ciclo de ataque
         self.attack_sound_played = False
+
+        
+        self.attack_range_y = 50  # Ajuste esse valor conforme necessário
+
 
     def attack_hit_active(self):
         """
@@ -84,7 +91,8 @@ class Inimigo_NightBorne(Inimigo):
         """
         # Se estiver morrendo, apenas atualiza a animação de morte.
         if self.is_dying:
-            self.update_image(self.images_death_right if self.facing_right else self.images_death_left, finish_on_end=True)
+            self.update_image(
+                self.images_death_right if self.facing_right else self.images_death_left, finish_on_end=True)
             return
 
         # Se estiver tomando dano, atualiza a animação de dano.
@@ -99,8 +107,9 @@ class Inimigo_NightBorne(Inimigo):
 
         # Verifica se há um alvo para iniciar o ataque.
         if self.alvo is not None:
-            distancia = abs(self.alvo.x - self.x)
-            if distancia < self.attack_range:
+            distancia_x = abs(self.alvo.x - self.x)
+            distancia_y = abs(self.alvo.y - self.y)
+            if distancia_x < self.attack_range and distancia_y < self.attack_range_y:
                 # Ajusta a direção para encarar o alvo.
                 self.facing_right = self.alvo.x > self.x
                 if not self.is_attacking:
@@ -116,6 +125,7 @@ class Inimigo_NightBorne(Inimigo):
                     self.current_image = 0
                     self.current_images_list = self.images_idle_right if self.facing_right else self.images_idle_left
                 self.is_moving = True
+
 
         # Se estiver no estado de ataque:
         if self.is_attacking:
@@ -157,9 +167,11 @@ class Inimigo_NightBorne(Inimigo):
                 self.current_images_list = self.images_run_left
 
             # Inverte a direção ao bater nos limites da tela.
-            if self.actor.x >= 1200:
+            if self.actor.x >= self.x_final:
+                self.actor.x = self.x_final
                 self.facing_right = False
-            elif self.actor.x <= 0:
+            elif self.actor.x <= self.x_inicial:
+                self.actor.x = self.x_inicial
                 self.facing_right = True
 
         # Aplica a gravidade.

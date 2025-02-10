@@ -1,5 +1,5 @@
-from pgzero.actor import Actor
-from pgzero.keyboard import keyboard
+from pygame import Rect
+
 
 # Constantes do jogo
 CHAO_Y = 700
@@ -15,16 +15,11 @@ class Entity:
         self.largura = largura
         self.altura = altura
 
+    def get_rect(self):
+        # Considerando que x e y representam o canto superior esquerdo
+        return Rect(self.x, self.y, self.largura, self.altura)
+
     def verificar_colisao_com(self, outra_entidade, vel_y=0):
-        """
-        Verifica se esta entidade colide com outra_entidade.
-        A condição de colisão foi definida de forma semelhante à utilizada
-        na classe Personagem original para as plataformas.
-        """
-        if (
-            self.x > outra_entidade.x - outra_entidade.largura // 2 and
-            self.x < outra_entidade.x + outra_entidade.largura // 2 and
-            self.y + vel_y >= outra_entidade.y
-        ):
-            return True
-        return False
+        self_rect = Rect(self.x, self.y + vel_y, self.largura, self.altura)
+        outra_rect = outra_entidade.get_rect()
+        return self_rect.colliderect(outra_rect)
