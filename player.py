@@ -6,7 +6,7 @@ from audio import play_sound
 from pygame import Rect
 
 class Personagem(Entity):
-    def __init__(self, plataformas, life_bar, x_inicial=100, y_inicial=750):
+    def __init__(self, platforms, life_bar, x_inicial=100, y_inicial=750):
         super().__init__(x_inicial, y_inicial, 25, 35)
         self.actor = Actor('heroknight_idle_0')
         self.actor.pos = (x_inicial, y_inicial)
@@ -64,7 +64,7 @@ class Personagem(Entity):
         self.frame_count = 0
 
         # Plataformas
-        self.plataformas = plataformas
+        self.platforms = platforms
 
         # Lógica de ataque
         self.attack_damage = 20
@@ -252,7 +252,7 @@ class Personagem(Entity):
 
         self.health -= damage
         if damage > 0 and self.life_bar is not None:
-            self.life_bar.atualizar(self.health)
+            self.life_bar.update(self.health)
 
         if self.health <= 0:
             self.health = 0
@@ -339,7 +339,7 @@ class Personagem(Entity):
         Calcula o overlap em cada eixo e reposiciona o personagem na direção de menor penetração.
         """
         char_rect = self.get_rect()
-        for plataforma in self.plataformas:
+        for plataforma in self.platforms:
             offset_x = getattr(plataforma, "offset_x", 0)
             offset_y = getattr(plataforma, "offset_y", 0)
             plat_rect = Rect(

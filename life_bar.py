@@ -19,7 +19,7 @@ class LifeBar:
         # Inicialmente, a vida é 100%
         self.vida_atual = 100
 
-    def atualizar(self, nova_vida):
+    def update(self, nova_vida):
         """
         Atualiza o valor atual da vida.
         """

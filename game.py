@@ -1,7 +1,7 @@
 import pgzrun
 from pgzero.actor import Actor
 from player import Personagem
-from plataformas import Platforms
+from platforms import Platforms
 from enemy_NightBorne import Enemy_NightBorne
 from enemy_slime import Enemy_Slime
 from espinho import Espinho  # Classe dos espinhos
@@ -37,12 +37,14 @@ class Game:
             "game_over", center=(WIDTH // 2, HEIGHT // 2))
 
     def iniciar_fase(self, fase_idx):
-        # (Seu código de inicialização da fase permanece inalterado)
+ 
         fase = self.fases[fase_idx]
         self.plataformas = fase.get('plataformas', [])
         self.espinhos = fase.get('spikes', [])
         self.saw_blades = fase.get('saw_blade', [])
         self.fundo = Actor(fase.get('background', 'default_background'))
+         # Exibe o tutorial somente na primeira fase (índice 0)
+        self.show_tutorial = (fase_idx == 0)
 
         spawn_player = fase.get('spawn_player', (20, 700))
         x_inicial, y_inicial = spawn_player
@@ -196,6 +198,25 @@ class Game:
         if self.personagem.is_dead:
             self.game_over_image.draw()
 
+        # Se o tutorial estiver ativo, desenha a sobreposição
+        if self.show_tutorial:
+            # Define a posição e o tamanho do retângulo do tutorial
+            tutorial_rect = Rect((100, 100), (WIDTH - 200, HEIGHT - 200))
+            # Desenha um retângulo preenchido de preto (você pode ajustar a cor, transparência, etc.)
+            screen.draw.filled_rect(tutorial_rect, "black")
+            # Adiciona o texto do tutorial (ajuste a mensagem, fonte e posição conforme necessário)
+            screen.draw.text(
+                "Tutorial:\n\n"
+                "- Use as teclas A e D do teclado para mover seu personagem.\n"
+                "- Clique com o botão esquerdo do mouse para atacar e com o direito para defender.\n"
+                "- Colete as chaves para abrir as portas.\n\n"
+                "Clique para fechar este tutorial.",
+                center=tutorial_rect.center,
+                color="white",
+                fontsize=24,
+                align="center"
+            )
+
 
 # =================================================================
 # CONFIGURAÇÃO DAS FASES (exemplo)
@@ -208,10 +229,10 @@ fases = [
         'background': 'cenario1',
         'spawn_player': (20, 700),
         'plataformas': [
-                Platforms(0, 750, 300),      # chão: x de 0 a 300
+                Platforms(0, 750, 300),      # chão: x de 0 
                 Platforms(350, 700, 8),    # plataforma intermediária
-                Platforms(550, 600, 15),    # plataforma superior
-                Platforms(800, 600, 150),    # plataforma onde fica a porta
+                Platforms(550, 630, 50),    # plataforma superior
+
 
         ],
         'spikes': [
@@ -222,10 +243,10 @@ fases = [
             # sobre a plataforma de 350,700
             Saw_Blade(x_inicial=360, y=700, x_final=480)
         ],
-        'keys': [(550, 550)],           # chave na plataforma de 500,550
-        'doors': [(850, 600)],          # porta na plataforma de 800,600
+        'keys': [(550, 630)],           # chave na plataforma de 500,550
+        'doors': [(850, 630)],          # porta na plataforma de 800,600
         'enemies': [
-            {'type': 'slime', 'x': 600, 'y': 650, 'x_min': 550, 'x_max': 750}
+            {'type': 'slime', 'x': 630, 'y': 650, 'x_min': 550, 'x_max': 750}
         ]
     },
 
@@ -687,13 +708,19 @@ def draw():
 
 
 def on_mouse_down(pos, button):
+    global game_state
     if game_state == "menu":
         menu.on_mouse_down(pos)
     else:
-        if button == 1:  # botão esquerdo
-            game.personagem.on_mouse_down(pos, "left")
-        elif button == 3:  # botão direito
-            game.personagem.on_mouse_down(pos, "right")
+        # Se o tutorial estiver ativo, ao clicar, ele é desativado
+        if game.show_tutorial:
+            game.show_tutorial = False
+        else:
+            if button == 1:  # botão esquerdo
+                game.personagem.on_mouse_down(pos, "left")
+            elif button == 3:  # botão direito
+                game.personagem.on_mouse_down(pos, "right")
+
 
 
 def on_mouse_up(pos, button):
