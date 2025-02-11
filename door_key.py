@@ -25,7 +25,7 @@ class Key:
 class Door:
     def __init__(self, x, y):
         self.x = x
-        self.y = y
+        self.y = y-7
         self.locked = True
         self.is_opening = False
         self.is_open = False
@@ -34,7 +34,7 @@ class Door:
         self.current_frame = 0
         self.animation_timer = 0
         self.animation_speed = 0.2  # Segundos por frame
-        self.actor = Actor(self.animation_frames[0], (x, y))
+        self.actor = Actor(self.animation_frames[0], (x, y-7))
 
     def unlock(self):
         if self.locked:

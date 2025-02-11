@@ -1,4 +1,4 @@
-import pygame  
+from pygame import Rect
 from pgzero.actor import Actor
 from entity import Entity
 
@@ -30,7 +30,7 @@ class Espinho(Entity):
         """
         Retorna um pygame.Rect representando a área do espinho.
         """
-        return pygame.Rect(
+        return Rect(
             self.x + self.offset_x,  # Usa o mesmo deslocamento do desenho
             self.y,
             self.largura,  # Usa a largura real do espinho

@@ -1,60 +1,27 @@
-import pygame
+import pygame 
 from enemy import Inimigo
 from pgzero.builtins import sounds
 from audio import play_sound
 from enemy import VELOCIDADE_CORRIDA, GRAVIDADE, VELOCIDADE_QUEDA_MAX
 
-
 class Enemy_NightBorne(Inimigo):
     def __init__(self, posicao_inicial_x, posicao_inicial_y, plataformas, x_inicial, x_final):
         super().__init__(
-            imagens_idle_right=[
-                'enemy1_idle_0', 'enemy1_idle_1', 'enemy1_idle_2', 'enemy1_idle_3',
-                'enemy1_idle_4', 'enemy1_idle_5', 'enemy1_idle_6', 'enemy1_idle_7', 'enemy1_idle_8'
-            ],
-            imagens_idle_left=[
-                'enemy1_idle_0_left', 'enemy1_idle_1_left', 'enemy1_idle_2_left', 'enemy1_idle_3_left',
-                'enemy1_idle_4_left', 'enemy1_idle_5_left', 'enemy1_idle_6_left', 'enemy1_idle_7_left', 'enemy1_idle_8_left'
-            ],
-            imagens_attack_right=[
-                'enemy1_attack_0', 'enemy1_attack_1', 'enemy1_attack_3', 'enemy1_attack_4',
-                'enemy1_attack_5', 'enemy1_attack_6', 'enemy1_attack_7', 'enemy1_attack_8',
-                'enemy1_attack_9', 'enemy1_attack_10', 'enemy1_attack_11', 'enemy1_attack_12'
-            ],
-            imagens_attack_left=[
-                'enemy1_attack_0_left', 'enemy1_attack_1_left', 'enemy1_attack_3_left', 'enemy1_attack_4_left',
-                'enemy1_attack_5_left', 'enemy1_attack_6_left', 'enemy1_attack_7_left', 'enemy1_attack_8_left',
-                'enemy1_attack_9_left', 'enemy1_attack_10_left', 'enemy1_attack_11_left', 'enemy1_attack_12_left'
-            ],
-            imagens_dano_right=[
-                'enemy1_hurt_0', 'enemy1_hurt_1', 'enemy1_hurt_2', 'enemy1_hurt_3', 'enemy1_hurt_4'
-            ],
-            imagens_dano_left=[
-                'enemy1_hurt_0_left', 'enemy1_hurt_1_left', 'enemy1_hurt_2_left', 'enemy1_hurt_3_left', 'enemy1_hurt_4_left'
-            ],
-            imagens_run_right=[
-                'enemy1_run_0', 'enemy1_run_1', 'enemy1_run_2', 'enemy1_run_3', 'enemy1_run_4', 'enemy1_run_5'
-            ],
-            imagens_run_left=[
-                'enemy1_run_0_left', 'enemy1_run_1_left', 'enemy1_run_2_left', 'enemy1_run_3_left', 'enemy1_run_4_left', 'enemy1_run_5_left'
-            ],
-            imagens_death_left=[
-                'enemy1_death_0_left', 'enemy1_death_1_left', 'enemy1_death_2_left',
-                'enemy1_death_3_left', 'enemy1_death_4_left', 'enemy1_death_5_left',
-                'enemy1_death_6_left', 'enemy1_death_7_left', 'enemy1_death_8_left',
-                'enemy1_death_9', 'enemy1_death_10', 'enemy1_death_11', 'enemy1_death_12',
-                'enemy1_death_13', 'enemy1_death_14', 'enemy1_death_15', 'enemy1_death_16',
-                'enemy1_death_17', 'enemy1_death_18', 'enemy1_death_19', 'enemy1_death_20',
-                'enemy1_death_21', 'enemy1_death_22'
-            ],
-            imagens_death_right=[
-                'enemy1_death_0', 'enemy1_death_1', 'enemy1_death_2', 'enemy1_death_3',
-                'enemy1_death_4', 'enemy1_death_5', 'enemy1_death_6', 'enemy1_death_7',
-                'enemy1_death_8', 'enemy1_death_9', 'enemy1_death_10', 'enemy1_death_11',
-                'enemy1_death_12', 'enemy1_death_13', 'enemy1_death_14', 'enemy1_death_15',
-                'enemy1_death_16', 'enemy1_death_17', 'enemy1_death_18', 'enemy1_death_19',
-                'enemy1_death_20', 'enemy1_death_21', 'enemy1_death_22'
-            ],
+            # Idle
+            imagens_idle_right=[f'enemy1_idle_{i}' for i in range(9)],
+            imagens_idle_left=[f'enemy1_idle_{i}_left' for i in range(9)],
+            # Ataque
+            imagens_attack_right=[f'enemy1_attack_{i}' for i in [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+            imagens_attack_left=[f'enemy1_attack_{i}_left' for i in [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+            # Dano
+            imagens_dano_right=[f'enemy1_hurt_{i}' for i in range(5)],
+            imagens_dano_left=[f'enemy1_hurt_{i}_left' for i in range(5)],
+            # Corrida
+            imagens_run_right=[f'enemy1_run_{i}' for i in range(6)],
+            imagens_run_left=[f'enemy1_run_{i}_left' for i in range(6)],
+            # Morte
+            imagens_death_right=[f'enemy1_death_{i}' for i in range(23)],
+            imagens_death_left=[f'enemy1_death_{i}_left' if i < 9 else f'enemy1_death_{i}' for i in range(23)],
             vida=100,
             dano=40,
             posicao_inicial_x=posicao_inicial_x,
@@ -63,18 +30,40 @@ class Enemy_NightBorne(Inimigo):
             x_inicial=x_inicial,
             x_final=x_final
         )
+
         # Sons específicos para o NightBorne:
         self.sound_attack = sounds.enemy_attack
         self.sound_run = sounds.enemy_walk
         self.sound_damage = sounds.enemy_damage
-        self.sound_death = sounds.enemy_death
-        self.attack_range = 50  # Distância máxima para ataque
+        self.sound_death  = sounds.enemy_death
 
+        self.attack_range   = 50   # Distância máxima para ataque (eixo x)
+        self.attack_range_y = 50   # Distância máxima para ataque (eixo y)
+        
         # Flag para garantir que o som de ataque seja tocado apenas uma vez por ciclo de ataque
         self.attack_sound_played = False
-
         
-        self.attack_range_y = 50  # Ajuste esse valor conforme necessário
+        # Timer para o som de corrida (evita repetição a cada frame)
+        self.run_sound_timer = 0
+
+    def update_image(self, images_list=None, finish_on_end=False):
+        """
+        Atualiza a animação do NightBorne com um delay menor, tornando a troca de frames mais rápida.
+        """
+        # Defina um delay customizado menor para o NightBorne (por exemplo, 3 frames em vez de ANIMACAO_DELAY)
+        custom_anim_delay = 3
+
+        if images_list is None:
+            images_list = self.current_images_list
+        self.frame_count += 1
+        if self.frame_count >= custom_anim_delay:
+            self.current_image += 1
+            if finish_on_end and self.current_image >= len(images_list):
+                self.current_image = len(images_list) - 1
+            else:
+                self.current_image %= len(images_list)
+            self.actor.image = images_list[self.current_image]
+            self.frame_count = 0
 
 
     def attack_hit_active(self):
@@ -86,20 +75,19 @@ class Enemy_NightBorne(Inimigo):
 
     def update(self):
         """
-        Sobrescrevemos o update para ajustar o momento do som e do golpe.
-        A maior parte da lógica é igual à classe base, com alterações na parte de ataque.
+        Atualiza o estado do inimigo, tratando as animações, movimento, ataques e colisões.
         """
         # Se estiver morrendo, apenas atualiza a animação de morte.
         if self.is_dying:
-            self.update_image(
-                self.images_death_right if self.facing_right else self.images_death_left, finish_on_end=True)
+            death_images = self.images_death_right if self.facing_right else self.images_death_left
+            self.update_image(death_images, finish_on_end=True)
             return
 
         # Se estiver tomando dano, atualiza a animação de dano.
         if self.is_taking_damage:
-            dano_list = self.images_dano_right if self.facing_right else self.images_dano_left
-            self.update_image(dano_list, finish_on_end=True)
-            if self.current_image == len(dano_list) - 1:
+            dano_images = self.images_dano_right if self.facing_right else self.images_dano_left
+            self.update_image(dano_images, finish_on_end=True)
+            if self.current_image == len(dano_images) - 1:
                 self.is_taking_damage = False
                 self.current_image = 0
                 self.current_images_list = self.images_idle_right if self.facing_right else self.images_idle_left
@@ -126,12 +114,11 @@ class Enemy_NightBorne(Inimigo):
                     self.current_images_list = self.images_idle_right if self.facing_right else self.images_idle_left
                 self.is_moving = True
 
-
         # Se estiver no estado de ataque:
         if self.is_attacking:
             self.update_image()  # Atualiza o frame da animação de ataque
 
-            # Se chegarmos ao frame 10 (por exemplo) e o som ainda não foi tocado, toca-o.
+            # Toca o som de ataque no frame específico (ex.: frame 10)
             if self.current_image == 10 and not self.attack_sound_played:
                 if self.sound_attack:
                     play_sound(self.sound_attack)
@@ -141,7 +128,7 @@ class Enemy_NightBorne(Inimigo):
             if self.attack_hit_active():
                 self.check_attack_hit()
 
-            # Opcional: quando a animação de ataque chegar ao final, reseta para o estado idle.
+            # Ao fim da animação de ataque, volta para o estado idle.
             if self.current_image == len(self.current_images_list) - 1:
                 self.is_attacking = False
                 self.current_image = 0
@@ -149,9 +136,9 @@ class Enemy_NightBorne(Inimigo):
 
             return  # Interrompe o restante do update enquanto estiver atacando
 
-        # Se não estiver atacando, segue com o patrulhamento (movimentação) e gravidade:
+        # Se não estiver atacando, trata o movimento (patrulha) e aplica gravidade.
         if self.is_moving:
-            # Toca o som de corrida periodicamente (para não repetir a cada frame)
+            # Toca o som de corrida periodicamente
             if self.run_sound_timer <= 0:
                 if self.sound_run:
                     play_sound(self.sound_run)
@@ -166,7 +153,7 @@ class Enemy_NightBorne(Inimigo):
                 self.actor.x -= VELOCIDADE_CORRIDA
                 self.current_images_list = self.images_run_left
 
-            # Inverte a direção ao bater nos limites da tela.
+            # Inverte a direção ao bater nos limites definidos.
             if self.actor.x >= self.x_final:
                 self.actor.x = self.x_final
                 self.facing_right = False
@@ -180,12 +167,12 @@ class Enemy_NightBorne(Inimigo):
             self.velocidade_y = VELOCIDADE_QUEDA_MAX
         self.actor.y += self.velocidade_y
 
-        # Sincroniza a posição da entidade com a do actor.
+        # Sincroniza a posição com a do actor.
         self.x = self.actor.x
         self.y = self.actor.y
 
         # Verifica colisões com as plataformas.
         self.verificar_colisoes()
 
-        # Atualiza a animação do estado normal (idle ou patrulhamento).
+        # Atualiza a animação do estado normal (idle ou patrulha).
         self.update_image()
